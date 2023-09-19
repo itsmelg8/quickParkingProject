@@ -20,6 +20,13 @@ const cadastrarVeiculo = async (req, res) => {
     };
 
     try {
+        const placaVeiculo = 'select * from veiculo where placa = $1'
+		const placaExistente = await pool.query(placaVeiculo, [placa]);
+
+		if (placaExistente.rowCount > 0) {
+			return res.status(400).json({ mensagem: 'Carro informado já está cadastrado' });
+		};
+
 		const novoVeiculo = await pool.query(
 			'insert into veiculo (placa, marca, modelo, cor) values ($1, $2, $3, $4) returning *',
 			[placa, marca, modelo, cor]
